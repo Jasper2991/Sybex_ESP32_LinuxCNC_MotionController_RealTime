@@ -20,11 +20,20 @@ inline String configWifiPwd = "";
 inline uint8_t configWifiHide = 0;
 
 #if ESP32_SPI_ETHERNET
+  #if defined(Waveshare_ESP32_S3_ETH) //Pins for Waveshare ESP32-S3-ETH Ethernet Development Board
+    inline uint8_t configSpiMosiPin = 11;
+    inline uint8_t configSpiMisoPin = 12;
+    inline uint8_t configSpiSckPin  = 13;
+    inline uint8_t configSpiCsPin   = 14;
+    inline uint8_t configSpiIntPin  = 10;
+  #else
+  // Default pins
 	inline uint8_t configSpiMosiPin = 23;
 	inline uint8_t configSpiMisoPin = 19;
 	inline uint8_t configSpiSckPin = 18;
 	inline uint8_t configSpiCsPin = 0;
 	inline uint8_t configSpiIntPin = 4;
+  #endif
 #endif
 
 inline board_type_t configBoardType = BOARD_TYPE_NONE;

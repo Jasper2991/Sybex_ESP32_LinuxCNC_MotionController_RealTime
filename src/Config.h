@@ -20,19 +20,42 @@
   #undef MAX_STEPPER
 #endif
 #define MAX_STEPPER 	6
-#define MAX_BOARD_TYPES 8
+#define MAX_BOARD_TYPES 9
 #define MAX_INPUTS 		7
 #define MAX_OUTPUTS 	7
 
 //#define CONF_NUM_STEPPERS 3  /* Set how many motors you want to enable and update the stepper_config struct below with the motors you require */
 /* !!!!Important!!!! Do not update the MAX_STEPPER define - this is set to 6 max and the size of the UDP RX/TX buffer is set accordingly to support up-to 6 max */
 
-/* Ethernet config and IP Addressing */
-const static uint8_t   ethernet_mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-const static IPAddress ethernet_ip(192, 168, 111, 1); /* ESP32 Ethernet IP Address */
-const static IPAddress ethernet_ip_host(192, 168, 111, 2); /* LinuxCNC Ethernet adapter IP must be configured as this */
-const static IPAddress ethernet_gw(192, 168, 111, 254); /* Only useful if you connect ESP32 and LinuxCNC Host on same network segment with a router or another network */
-const static IPAddress ethernet_subnetmask(255, 255, 255, 0);
+/* Ethernet MAC and IP configuration */
+
+// MAC: allow override via ETH_MAC define in platformio.ini
+#ifndef ETH_MAC
+#define ETH_MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
+#endif
+const static uint8_t ethernet_mac[] = ETH_MAC;
+
+// IP: allow override via ETH_IP, ETH_IP_HOST, ETH_GW, ETH_MASK
+#ifndef ETH_IP
+#define ETH_IP 192,168,111,1
+#endif
+
+#ifndef ETH_IP_HOST
+#define ETH_IP_HOST 192,168,111,2
+#endif
+
+#ifndef ETH_GW
+#define ETH_GW 192,168,111,254
+#endif
+
+#ifndef ETH_MASK
+#define ETH_MASK 255,255,255,0
+#endif
+
+const static IPAddress ethernet_ip(ETH_IP);
+const static IPAddress ethernet_ip_host(ETH_IP_HOST);
+const static IPAddress ethernet_gw(ETH_GW);
+const static IPAddress ethernet_subnetmask(ETH_MASK);
 
 /* Async UDP Client and Server is used to ensure bi-directional low-latency data streaming between ESP32 and LinuxCNC Host */
 const static uint16_t udpServerPort = 58000;  /* UDP Server port the ESP32 listens on. LinuxCNC HAL driver sends data to this port */
@@ -71,14 +94,15 @@ typedef enum  {
 
 typedef enum
 {
-    BOARD_TYPE_NONE = 0,          /* Basic board, no ethernet, wifi only */
-    BOARD_TYPE_ESP32_WOKWI_SIMUL, /* WOKWI Simulator */
-    BOARD_TYPE_ESP32_POE,         /* POE */
-    BOARD_TYPE_ESP32_EVB,         /* EVB */
-    BOARD_TYPE_ESP32_GATEWAY,     /* GATEWAY */
-    BOARD_TYPE_ESP32_WT32_ETH01,  /* WT32_ETH01 */
-    BOARD_TYPE_ESP32_MKSDLC32,    /* MKS_DLC32 */
-    BOARD_TYPE_ESP32_WROOM_DEV    /* ESP32_WROOM_DEV */
+    BOARD_TYPE_NONE = 0,                    /* Basic board, no ethernet, wifi only */
+    BOARD_TYPE_ESP32_WOKWI_SIMUL,           /* WOKWI Simulator */
+    BOARD_TYPE_ESP32_POE,                   /* POE */
+    BOARD_TYPE_ESP32_EVB,                   /* EVB */
+    BOARD_TYPE_ESP32_GATEWAY,               /* GATEWAY */
+    BOARD_TYPE_ESP32_WT32_ETH01,            /* WT32_ETH01 */
+    BOARD_TYPE_ESP32_MKSDLC32,              /* MKS_DLC32 */
+    BOARD_TYPE_ESP32_WROOM_DEV,             /* ESP32_WROOM_DEV */
+    BOARD_TYPE_WAVESHARE_ESP32_S3_ETH       /* Waveshare_ESP32-S3-ETH*/
 } board_type_t;
 
 typedef struct {
@@ -310,6 +334,32 @@ inline const board_pinconfig_t board_pin_configs[MAX_BOARD_TYPES] = {
                             { .gpio_number=GPIO_NUM_15 },
                             { .gpio_number=GPIO_NUM_25 },
                         }
+    },
+
+    { .board_type=BOARD_TYPE_WAVESHARE_ESP32_S3_ETH, .num_steppers=3,
+        .stepperConfig = {
+            { .step=PIN_UNDEFINED, .direction=PIN_UNDEFINED, .enable_low_active=PIN_UNDEFINED, .enable_high_active=PIN_UNDEFINED },
+            { .step=PIN_UNDEFINED, .direction=PIN_UNDEFINED, .enable_low_active=PIN_UNDEFINED, .enable_high_active=PIN_UNDEFINED },
+            { .step=PIN_UNDEFINED, .direction=PIN_UNDEFINED, .enable_low_active=PIN_UNDEFINED, .enable_high_active=PIN_UNDEFINED }
+        },
+        .inputConfigs = {
+            { }, 
+            { }, 
+            { }, 
+            { }, 
+            { }, 
+            { }, 
+            { }
+        },
+        .outputConfigs = {
+            { .gpio_number=GPIO_NUM_NC },
+            { .gpio_number=GPIO_NUM_NC },
+            { .gpio_number=GPIO_NUM_NC },
+            { .gpio_number=GPIO_NUM_NC },
+            { .gpio_number=GPIO_NUM_NC },
+            { .gpio_number=GPIO_NUM_NC },
+            { .gpio_number=GPIO_NUM_NC }
+        }
     }        
 };
 

@@ -236,6 +236,11 @@ bool startEthernet()
 {
     bool ethernet_setup = false;
 
+ // If SPICONFIG_OFF is defined, ignore NVS values and force compile-time defaults
+#if defined(SPICONFIG_OFF)
+    logMessage("SPICONFIG_OFF active: forcing compile-time SPI Ethernet pins, ignoring stored NVS values.");
+#endif
+
 #if ESP32_RMII_ETHERNET
     const ethernet_phy_pinconfig_t phy_pin_config = eth_phy_configs[configBoardType];
     ethernet_setup = ETH.begin(phy_pin_config.address, phy_pin_config.power_enable_pin, phy_pin_config.phy_mdc_pin, phy_pin_config.phy_mdio_pin, phy_pin_config.phy_type, phy_pin_config.phy_clk_mode, false);

@@ -753,6 +753,7 @@ void registerConsoleCmds()
 
 #if ESP32_SPI_ETHERNET
     /* spiethconfig command */
+    #if !defined (SPICONFIG_OFF)
     OptionsConsoleCommand spiethconf("spiethconfig", [](int argc, char **argv, ParseResult result, Options options) -> int {
             uint8_t miso_pin = -1;
             uint8_t mosi_pin = -1;
@@ -840,6 +841,9 @@ void registerConsoleCmds()
     spiethconf.options.add_options()("e,csenable", "Chip Select Enable pin", cxxopts::value<int>());
     spiethconf.options.add_options()("t,interrupt", "Interrupt pin", cxxopts::value<int>());
     console.registerCommand(spiethconf);
+    #else
+    Serial.println("SPI Ethernet config set in firmware; commando ignored.");
+    #endif
     /* end spiethconfig command */
 #endif
 
